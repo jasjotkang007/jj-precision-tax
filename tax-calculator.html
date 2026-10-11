@@ -1,0 +1,109 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Canadian Income Tax and Refund Calculator | JJ Precision Accounting &amp; Tax Inc.</title><meta name="description" content="Basic Canadian income tax estimate for 2024, 2025 and 2026."><style>*{box-sizing:border-box}body{margin:0;color:#092945;font:16px/1.6 Arial,sans-serif}a{color:#062b4a}header{padding:18px 5%;display:flex;gap:20px;align-items:center;flex-wrap:wrap;box-shadow:0 1px 10px #0001}header .brand{margin-right:auto;text-decoration:none;color:#062b4a;font:bold 18px Georgia;letter-spacing:1px}nav{display:flex;gap:16px;flex-wrap:wrap}nav a{text-decoration:none}.btn{display:inline-block;background:#062b4a;color:white!important;padding:11px 16px;border-radius:5px;text-decoration:none;border:0;cursor:pointer}.hero{padding:44px 5%;background:#f7f2e9}.eyebrow{font-size:11px;letter-spacing:2px;font-weight:bold}.hero h1,h2,h3{font-family:Georgia,serif}.hero h1{font-size:38px;line-height:1.2;margin:10px 0}.hero em{color:#b9892e;font-style:normal}.hero p,.intro{max-width:850px;color:#455968}section{padding:35px 5%}h2{font-size:29px}h3{font-size:21px}.cards,.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.card,.panel,.article-card{border:1px solid #e0e5e8;border-radius:8px;padding:20px}.card p,.article-card p{color:#455968}.alt{background:#faf9f7}.note,.example{background:#f7f2e9;border-left:4px solid #b9892e;padding:14px 17px;margin:18px 0;font-size:14px}.field{margin:0 0 14px}.field label{display:block;font-weight:bold;font-size:14px}.field small{display:block;color:#56616b}input,select{width:100%;padding:10px;border:1px solid #cbd4db;border-radius:5px;font:inherit}.result{background:#f7f9fb;border:1px solid #d9e1e7;border-radius:8px;padding:20px;margin-top:20px}.big{font:bold 32px Georgia;display:block;margin:8px 0}.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:white;border:1px solid #e0e5e8;padding:12px;border-radius:5px}.metric span{display:block;color:#56616b;font-size:13px}.metric b{font-size:18px}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:10px;border-bottom:1px solid #ddd}th{background:#f2f5f7}.article-body{max-width:900px;margin:auto;padding:30px 5%;font-size:17px}.article-body h2{margin-top:30px}details{padding:14px 0;border-bottom:1px solid #ddd}summary{cursor:pointer;font-weight:bold}footer{background:#031f36;color:white;padding:25px 5%;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}footer a{color:white}footer p{font-size:13px}@media(max-width:700px){.grid,.cards,.metrics{grid-template-columns:1fr}.hero h1{font-size:32px}header{padding:15px 20px}section{padding:28px 20px}.article-body{padding:25px 20px}}</style></head><body><header><a class="brand" href="index.html">JJ PRECISION<br><small>ACCOUNTING &amp; TAX INC.</small></a><nav><a href="index.html">Home</a><a href="index.html#services">Services</a><a href="resources.html">Tax Resources</a><a href="index.html#about">About Us</a><a href="index.html#contact">Contact</a></nav><a class="btn" href="index.html#contact">Get in Touch</a></header>
+<main><div class="hero"><div class="eyebrow">CANADIAN TAX ESTIMATE</div><h1>Income Tax &amp; Refund<br><em>Calculator.</em></h1><p>A basic educational estimate for 2024, 2025 or 2026, with common income sources, income tax deducted at source, the basic personal amount and the employment amount.</p></div>
+<section><div class="note"><b>Privacy first:</b> This calculator runs in your browser. Figures are not sent to JJ Precision or stored in a database. Do not enter your name, SIN, address or banking information.</div>
+<form id="f" class="panel"><div class="grid">
+<div class="field"><label for="year">Tax year</label><select id="year"><option>2026</option><option>2025</option><option>2024</option></select></div>
+<div class="field"><label for="province">Province or territory on December 31</label><select id="province"><option>Alberta</option><option>British Columbia</option><option>Manitoba</option><option>New Brunswick</option><option>Newfoundland and Labrador</option><option>Northwest Territories</option><option>Nova Scotia</option><option>Nunavut</option><option selected>Ontario</option><option>Prince Edward Island</option><option>Quebec</option><option>Saskatchewan</option><option>Yukon</option></select></div>
+</div><h3>Income sources</h3><p class="intro">Enter annual amounts. For dividends, use the taxable amounts shown on the return. For capital gains, enter the taxable capital-gain amount.</p><div class="grid">
+<div class="field"><label for="employment">Employment income ($)</label><input id="employment" type="number" min="0" value="0"></div>
+<div class="field"><label for="self">Self-employment net income ($)</label><input id="self" type="number" min="0" value="0"></div>
+<div class="field"><label for="interest">Interest / investment income ($)</label><input id="interest" type="number" min="0" value="0"></div>
+<div class="field"><label for="pension">Pension / RRSP / RRIF income ($)</label><input id="pension" type="number" min="0" value="0"></div>
+<div class="field"><label for="capital">Taxable capital gains ($)</label><input id="capital" type="number" min="0" value="0"></div>
+<div class="field"><label for="eligible">Taxable eligible dividends ($)</label><input id="eligible" type="number" min="0" value="0"></div>
+<div class="field"><label for="noneligible">Taxable non-eligible dividends ($)</label><input id="noneligible" type="number" min="0" value="0"></div>
+<div class="field"><label for="other">Other taxable income ($)</label><input id="other" type="number" min="0" value="0"></div>
+</div><h3>Deductions, credits and tax already paid</h3><div class="grid">
+<div class="field"><label for="deductions">Other deductions ($)</label><input id="deductions" type="number" min="0" value="0"><small>For example, RRSP deductions or eligible moving expenses.</small></div>
+<div class="field"><label for="tuition">Eligible tuition amount available ($)</label><input id="tuition" type="number" min="0" value="0"><small>Enter eligible tuition amount, not a cash refund.</small></div>
+<div class="field"><label for="withheld">Income tax deducted at source / instalments ($)</label><input id="withheld" type="number" min="0" value="0"></div>
+<div class="field"><label for="refundable">Other refundable credits ($)</label><input id="refundable" type="number" min="0" value="0"><small>For example, an estimated Canada Workers Benefit (CWB). Enter only if eligible; the calculator does not determine CWB eligibility.</small></div>
+</div><p><button class="btn" type="submit">Calculate estimate</button> <button class="btn" type="reset" style="background:#6d7b85">Clear figures</button></p></form>
+<div class="result" id="result" aria-live="polite"><h2>Your estimate</h2><p>Enter your figures and calculate.</p></div>
+<div class="note"><b>Important:</b> This is a simplified prototype, not tax-preparation software. It estimates basic federal and provincial/territorial income tax using general brackets and selected non-refundable credits. It does not fully model dividend tax credits, EI, Quebec abatement, surtaxes, all provincial credits, AMT, income-tested benefits or special rules. Self-employment CPP is estimated for simple cases and may be wrong if you also had employment income, CPP contributions on T4 slips, or other CPP adjustments. Enter any refundable credits such as CWB separately. Rates and thresholds must be checked for the selected tax year before relying on this estimate. Quebec residents generally file a separate provincial return. See <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/tax-rates-brackets/current-year.html" target="_blank" rel="noopener">CRA rates ↗</a> and <a href="https://www.revenuquebec.ca/en/citizens/income-tax-return/completing-your-income-tax-return/income-tax-rates/" target="_blank" rel="noopener">Revenu Québec rates ↗</a>.</div></section></main>
+<script>
+const brackets={
+2024:{fed:[[55867,.15],[111733,.205],[173205,.26],[246752,.29],[Infinity,.33]],prov:{
+Alberta:[[148269,.10],[177922,.12],[237230,.13],[355845,.14],[Infinity,.15]],"British Columbia":[[47937,.0506],[95875,.077],[110076,.105],[133664,.1229],[181232,.147],[252752,.168],[Infinity,.205]],Manitoba:[[47000,.108],[100000,.1275],[Infinity,.174]],"New Brunswick":[[49958,.094],[99916,.14],[185064,.16],[Infinity,.195]],"Newfoundland and Labrador":[[43198,.087],[86395,.145],[154244,.158],[215943,.178],[275870,.198],[551739,.208],[1103478,.213],[Infinity,.218]],"Northwest Territories":[[50597,.059],[101198,.086],[164525,.122],[Infinity,.1405]],"Nova Scotia":[[29590,.0879],[59180,.1495],[93000,.1667],[150000,.175],[Infinity,.21]],Nunavut:[[53268,.04],[106537,.07],[173205,.09],[Infinity,.115]],Ontario:[[51446,.0505],[102894,.0915],[150000,.1116],[220000,.1216],[Infinity,.1316]],"Prince Edward Island":[[32656,.0965],[64313,.1363],[105000,.1665],[140000,.18],[Infinity,.1875]],Quebec:[[51780,.14],[103545,.19],[126000,.24],[Infinity,.2575]],Saskatchewan:[[52057,.105],[148734,.125],[Infinity,.145]],Yukon:[[55867,.064],[111733,.09],[173205,.109],[500000,.128],[Infinity,.15]]}},
+2025:{fed:[[57375,.145],[114750,.205],[177882,.26],[253414,.29],[Infinity,.33]],prov:{
+Alberta:[[60000,.08],[151234,.10],[181481,.12],[241974,.13],[362961,.14],[Infinity,.15]],"British Columbia":[[49279,.0506],[98560,.077],[113158,.105],[137407,.1229],[186306,.147],[259829,.168],[Infinity,.205]],Manitoba:[[47564,.108],[101200,.1275],[Infinity,.174]],"New Brunswick":[[51306,.094],[102614,.14],[190060,.16],[Infinity,.195]],"Newfoundland and Labrador":[[44192,.087],[88382,.145],[157792,.158],[220910,.178],[282214,.198],[564429,.208],[1128858,.213],[Infinity,.218]],"Northwest Territories":[[51964,.059],[103930,.086],[168967,.122],[Infinity,.1405]],"Nova Scotia":[[30507,.0879],[61015,.1495],[95883,.1667],[154650,.175],[Infinity,.21]],Nunavut:[[54707,.04],[109413,.07],[177881,.09],[Infinity,.115]],Ontario:[[52886,.0505],[105775,.0915],[150000,.1116],[220000,.1216],[Infinity,.1316]],"Prince Edward Island":[[33328,.095],[64656,.1347],[105000,.166],[140000,.1762],[Infinity,.19]],Quebec:[[53255,.14],[106495,.19],[129590,.24],[Infinity,.2575]],Saskatchewan:[[53463,.105],[152750,.125],[Infinity,.145]],Yukon:[[57375,.064],[114750,.09],[177882,.109],[500000,.128],[Infinity,.15]]}},
+2026:{fed:[[58523,.14],[117045,.205],[181440,.26],[258482,.29],[Infinity,.33]],prov:{
+Alberta:[[61200,.08],[154259,.10],[185111,.12],[246813,.13],[370220,.14],[Infinity,.15]],"British Columbia":[[50363,.056],[100728,.077],[115648,.105],[140430,.1229],[190405,.147],[265545,.168],[Infinity,.205]],Manitoba:[[47564,.108],[101200,.1275],[Infinity,.174]],"New Brunswick":[[52333,.094],[104666,.14],[193861,.16],[Infinity,.195]],"Newfoundland and Labrador":[[44678,.087],[89354,.145],[159528,.158],[223340,.178],[285319,.198],[570638,.208],[1141275,.213],[Infinity,.218]],"Northwest Territories":[[53003,.059],[106009,.086],[172346,.122],[Infinity,.1405]],"Nova Scotia":[[30995,.0879],[61991,.1495],[97417,.1667],[157124,.175],[Infinity,.21]],Nunavut:[[55801,.04],[111602,.07],[181439,.09],[Infinity,.115]],Ontario:[[53891,.0505],[107785,.0915],[150000,.1116],[220000,.1216],[Infinity,.1316]],"Prince Edward Island":[[33928,.095],[65820,.1347],[106890,.166],[142520,.1762],[200000,.19],[Infinity,.20]],Quebec:[[54345,.14],[108680,.19],[132245,.24],[Infinity,.2575]],Saskatchewan:[[54532,.105],[155805,.125],[Infinity,.145]],Yukon:[[58523,.064],[117045,.09],[181440,.109],[500000,.128],[Infinity,.15]]}}};
+const bpa={2024:15705,2025:16129,2026:16452}, emp={2024:1433,2025:1471,2026:1501};
+const pBpa={Alberta:{2024:21885,2025:21885,2026:22823},"British Columbia":{2024:12580,2025:12580,2026:12932},Manitoba:{2024:15780,2025:15780,2026:15780},"New Brunswick":{2024:12458,2025:12458,2026:13064},"Newfoundland and Labrador":{2024:10818,2025:10818,2026:11067},"Northwest Territories":{2024:17373,2025:17373,2026:17894},"Nova Scotia":{2024:8481,2025:8481,2026:8615},Nunavut:{2024:18242,2025:18242,2026:18767},Ontario:{2024:12399,2025:12399,2026:12989},"Prince Edward Island":{2024:13500,2025:13500,2026:14450},Quebec:{2024:18056,2025:18571,2026:18952},Saskatchewan:{2024:17661,2025:17661,2026:18491},Yukon:{2024:15705,2025:16129,2026:16452}};
+const fmt=n=>new Intl.NumberFormat('en-CA',{style:'currency',currency:'CAD',maximumFractionDigits:0}).format(n);
+const v=id=>Math.max(0,+document.getElementById(id).value||0);
+function tax(x,b){let t=0,prev=0;for(const [cap,r] of b){t+=Math.max(0,Math.min(x,cap)-prev)*r;if(x<=cap)break;prev=cap}return t}
+function calculate(e){
+ if(e)e.preventDefault();
+ const y=+document.getElementById('year').value,p=document.getElementById('province').value;
+ const employment=v('employment'), selfIncome=v('self'), interest=v('interest'), pension=v('pension'), capital=v('capital'), eligible=v('eligible'), noneligible=v('noneligible'), other=v('other');
+ const income=employment+selfIncome+interest+pension+capital+eligible+noneligible+other;
+ const deductions=v('deductions'), tuition=v('tuition'), paid=v('withheld'), refundable=v('refundable');
+ let enhancedCppDeduction=0, cppBaseCredit=0, eiCredit=0, cppPayable=0;
+ // Approximate CPP for a simple self-employment-only case. Mixed employment/self-employment requires Schedule 8 and T4 CPP data.
+ if(y===2025){
+   const pensionable=Math.max(0,Math.min(selfIncome,71300)-3500);
+   const baseSelfCpp=pensionable*0.099;
+   const enhancedSelfCpp=pensionable*0.02;
+   cppPayable=baseSelfCpp+enhancedSelfCpp;
+   cppBaseCredit=baseSelfCpp/2;
+   enhancedCppDeduction=baseSelfCpp/2+enhancedSelfCpp;
+   // Employee CPP/EI approximations, only when employment income is entered.
+   cppBaseCredit+=Math.min(Math.max(0,employment-3500)*0.0495,4034.10);
+   enhancedCppDeduction+=Math.min(Math.max(0,employment-3500)*0.01,678);
+   eiCredit=Math.min(employment,65700)*0.0164;
+ } else if(y===2024){
+   const pensionable=Math.max(0,Math.min(selfIncome,68500)-3500);
+   const baseSelfCpp=pensionable*0.099;
+   const enhancedSelfCpp=pensionable*0.02;
+   cppPayable=baseSelfCpp+enhancedSelfCpp;
+   cppBaseCredit=baseSelfCpp/2+Math.min(Math.max(0,employment-3500)*0.0495,3867.50);
+   enhancedCppDeduction=baseSelfCpp/2+enhancedSelfCpp+Math.min(Math.max(0,employment-3500)*0.01,631);
+   eiCredit=Math.min(employment,63200)*0.0166;
+ } else {
+   const pensionable=Math.max(0,Math.min(selfIncome,74600)-3500);
+   const baseSelfCpp=pensionable*0.099;
+   const enhancedSelfCpp=pensionable*0.02;
+   cppPayable=baseSelfCpp+enhancedSelfCpp;
+   cppBaseCredit=baseSelfCpp/2+Math.min(Math.max(0,employment-3500)*0.0495,4200);
+   enhancedCppDeduction=baseSelfCpp/2+enhancedSelfCpp+Math.min(Math.max(0,employment-3500)*0.01,700);
+   eiCredit=Math.min(employment,68500)*0.0164;
+ }
+ const taxable=Math.max(0,income-deductions-enhancedCppDeduction);
+ const creditRate=y===2024?.15:y===2025?.145:.14;
+ const fedGross=tax(taxable,brackets[y].fed);
+ const fedBpa=Math.min(taxable,bpa[y]);
+ const employmentAmount=Math.min(employment,emp[y]);
+ const tuitionCreditAmount=Math.min(tuition,Math.max(0,taxable-fedBpa-employmentAmount));
+ const fedCredits=(fedBpa+employmentAmount+cppBaseCredit+eiCredit+tuitionCreditAmount)*creditRate;
+ const fed=Math.max(0,fedGross-fedCredits);
+ const provBr=brackets[y].prov[p], provRate=provBr[0][1], pb=(pBpa[p]&&pBpa[p][y])||bpa[y];
+ const provBase=tax(taxable,provBr);
+ let prov=Math.max(0,provBase-Math.min(taxable,pb)*provRate-cppBaseCredit*provRate-eiCredit*provRate);
+ let extraProvNote='';
+ if(p==='Ontario' && y===2025){
+   const ontarioBpa=12747, ontarioRate=0.0505;
+   const ontarioTaxBeforeCredits=provBase;
+   const ontarioBasicCredit=Math.min(taxable,ontarioBpa)*ontarioRate;
+   const ontarioCppCredit=cppBaseCredit*ontarioRate;
+   const ontarioEiCredit=eiCredit*ontarioRate;
+   const ontarioTax=Math.max(0,ontarioTaxBeforeCredits-ontarioBasicCredit-ontarioCppCredit-ontarioEiCredit);
+   // 2025 Ontario tax reduction for a taxpayer with no dependants: twice the $294 basic amount less Ontario tax before reduction.
+   const ontarioTaxReduction=Math.min(ontarioTax,Math.max(0,588-ontarioTax));
+   const ontarioTaxAfterReduction=Math.max(0,ontarioTax-ontarioTaxReduction);
+   const healthPremium=taxable<=20000?0:taxable<=25000?Math.min(300,(taxable-20000)*0.06):taxable<=36000?300:taxable<=38500?Math.min(450,300+(taxable-36000)*0.06):taxable<=48000?450:taxable<=48600?Math.min(600,450+(taxable-48000)*0.25):taxable<=72000?600:taxable<=200000?Math.min(750,600+(taxable-72000)*0.25):taxable<=200600?Math.min(900,750+(taxable-200000)*0.25):900;
+   // LIFT is based on employment income; no LIFT is estimated for self-employment-only income.
+   const liftGross=Math.min(875,employment*0.0505);
+   const liftReduction=Math.max(0,taxable-32500)*0.05;
+   const lift=Math.min(ontarioTax,Math.max(0,liftGross-liftReduction));
+   prov=Math.max(0,ontarioTaxAfterReduction+healthPremium-lift);
+   extraProvNote=`<p><small>Ontario estimate includes estimated tax reduction (${fmt(ontarioTaxReduction)}), Health Premium (${fmt(healthPremium)}) and LIFT credit (${fmt(lift)}). This simplified Ontario calculation may not match every ON428 rule or credit.</small></p>`;
+ } else {
+   extraProvNote='<p><small>Provincial/territorial estimate remains simplified and does not fully model every province-specific credit, premium, surtax or special rule.</small></p>';
+ }
+ const total=fed+prov+cppPayable,balance=paid+refundable-total;
+ document.getElementById('result').innerHTML=`<h2>Estimated result</h2><strong class="big">${balance>=0?fmt(balance)+' refund estimate':fmt(-balance)+' balance owing estimate'}</strong><p>Educational estimate only; not a substitute for tax-preparation software.</p><div class="metrics"><div class="metric"><span>Total income entered</span><b>${fmt(income)}</b></div><div class="metric"><span>Estimated taxable income</span><b>${fmt(taxable)}</b></div><div class="metric"><span>Federal tax after selected credits</span><b>${fmt(fed)}</b></div><div class="metric"><span>Provincial / territorial estimate</span><b>${fmt(prov)}</b></div><div class="metric"><span>Estimated CPP payable on self-employment</span><b>${fmt(cppPayable)}</b></div><div class="metric"><span>Income tax deducted / instalments</span><b>${fmt(paid)}</b></div><div class="metric"><span>Other refundable credits entered</span><b>${fmt(refundable)}</b></div><div class="metric"><span>Estimated total tax + CPP</span><b>${fmt(total)}</b></div></div>${extraProvNote}<p><small>Estimated base CPP credit: ${fmt(cppBaseCredit)}; EI credit: ${fmt(eiCredit)}; enhanced CPP deduction: ${fmt(enhancedCppDeduction)}. CPP estimate assumes no T4 CPP contributions or other Schedule 8 adjustments.</small></p>`;
+}
+document.getElementById('f').addEventListener('submit',calculate);document.getElementById('f').addEventListener('reset',()=>setTimeout(()=>document.getElementById('result').innerHTML='<h2>Your estimate</h2><p>Enter your figures and calculate.</p>',0));
+</script><footer><div><b>JJ PRECISION ACCOUNTING &amp; TAX INC.</b><p>Precision in Accounting. Confidence in Tax.</p></div><div><a href="resources.html">Tax Resources</a> · <a href="privacy.html">Privacy</a> · <a href="disclaimer.html">Disclaimer</a></div><div><a href="mailto:info@jjptax.ca">info@jjptax.ca</a><p>647-806-0141</p></div></footer></body></html>
