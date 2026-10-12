@@ -15,12 +15,14 @@
 <div class="field"><label for="other">Other taxable income ($)</label><input id="other" type="number" min="0" value="0"></div>
 </div><h3>Deductions, credits and tax already paid</h3><div class="grid">
 <div class="field"><label for="deductions">Other deductions ($)</label><input id="deductions" type="number" min="0" value="0"><small>For example, RRSP deductions or eligible moving expenses.</small></div>
-<div class="field"><label for="tuition">Eligible tuition amount available ($)</label><input id="tuition" type="number" min="0" value="0"><small>Enter eligible tuition amount, not a cash refund.</small></div>
+<div class="field"><label for="tuitionPaid">Eligible tuition paid this year ($)</label><input id="tuitionPaid" type="number" min="0" value="0"><small>Use the eligible amount shown on your T2202. This is not the amount of tuition fees you get back.</small></div>
+<div class="field"><label for="tuitionCarry">Unused tuition amount carried forward ($)</label><input id="tuitionCarry" type="number" min="0" value="0"><small>Check your latest notice of assessment. Do not include an amount already transferred to another person.</small></div>
+<div class="field"><label for="medical">Eligible medical expenses ($)</label><input id="medical" type="number" min="0" value="0"><small>Enter qualifying unreimbursed expenses for the applicable claim period. The calculator applies a simplified income threshold.</small></div>
 <div class="field"><label for="withheld">Income tax deducted at source / instalments ($)</label><input id="withheld" type="number" min="0" value="0"></div>
-<div class="field"><label for="refundable">Other refundable credits ($)</label><input id="refundable" type="number" min="0" value="0"><small>For example, an estimated Canada Workers Benefit (CWB). Enter only if eligible; the calculator does not determine CWB eligibility.</small></div>
+<div class="field"><label for="cwbStatus">Canada Workers Benefit (CWB) estimate</label><select id="cwbStatus"><option value="none">Do not estimate CWB</option><option value="single">Single, no eligible spouse or dependants</option></select><small>Optional rough estimate for a single person with no eligible dependants. CWB eligibility and amounts depend on residency, working income, family status and other rules; verify before relying on it.</small></div>
 </div><p><button class="btn" type="submit">Calculate estimate</button> <button class="btn" type="reset" style="background:#6d7b85">Clear figures</button></p></form>
 <div class="result" id="result" aria-live="polite"><h2>Your estimate</h2><p>Enter your figures and calculate.</p></div>
-<div class="note"><b>Important:</b> This is a simplified prototype, not tax-preparation software. It estimates basic federal and provincial/territorial income tax using general brackets and selected non-refundable credits. It does not fully model dividend tax credits, EI, Quebec abatement, surtaxes, all provincial credits, AMT, income-tested benefits or special rules. Self-employment CPP is estimated for simple cases and may be wrong if you also had employment income, CPP contributions on T4 slips, or other CPP adjustments. Enter any refundable credits such as CWB separately. Rates and thresholds must be checked for the selected tax year before relying on this estimate. Quebec residents generally file a separate provincial return. See <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/tax-rates-brackets/current-year.html" target="_blank" rel="noopener">CRA rates ↗</a> and <a href="https://www.revenuquebec.ca/en/citizens/income-tax-return/completing-your-income-tax-return/income-tax-rates/" target="_blank" rel="noopener">Revenu Québec rates ↗</a>.</div></section></main>
+<div class="note"><b>Important:</b> This is a simplified prototype, not tax-preparation software. It estimates basic federal and provincial/territorial income tax using general brackets and selected non-refundable credits. It does not fully model dividend tax credits, EI, Quebec abatement, surtaxes, all provincial credits, AMT, income-tested benefits or special rules. Self-employment CPP is estimated for simple cases and may be wrong if you also had employment income, CPP contributions on T4 slips, or other CPP adjustments. CWB is only approximated for a 2026 single-person scenario when selected; other family situations are not estimated. Tuition and medical credits are simplified. Rates and thresholds must be checked for the selected tax year before relying on this estimate. Quebec residents generally file a separate provincial return. See <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/tax-rates-brackets/current-year.html" target="_blank" rel="noopener">CRA rates ↗</a> and <a href="https://www.revenuquebec.ca/en/citizens/income-tax-return/completing-your-income-tax-return/income-tax-rates/" target="_blank" rel="noopener">Revenu Québec rates ↗</a>.</div></section></main>
 <script>
 const brackets={
 2024:{fed:[[55867,.15],[111733,.205],[173205,.26],[246752,.29],[Infinity,.33]],prov:{
@@ -39,7 +41,8 @@ function calculate(e){
  const y=+document.getElementById('year').value,p=document.getElementById('province').value;
  const employment=v('employment'), selfIncome=v('self'), interest=v('interest'), pension=v('pension'), capital=v('capital'), eligible=v('eligible'), noneligible=v('noneligible'), other=v('other');
  const income=employment+selfIncome+interest+pension+capital+eligible+noneligible+other;
- const deductions=v('deductions'), tuition=v('tuition'), paid=v('withheld'), refundable=v('refundable');
+ const deductions=v('deductions'), tuition=Math.max(0,v('tuitionPaid'))+Math.max(0,v('tuitionCarry')), medical=v('medical'), paid=v('withheld');
+ const cwbStatus=document.getElementById('cwbStatus').value;
  let enhancedCppDeduction=0, cppBaseCredit=0, eiCredit=0, cppPayable=0;
  // Approximate CPP for a simple self-employment-only case. Mixed employment/self-employment requires Schedule 8 and T4 CPP data.
  if(y===2025){
@@ -66,9 +69,9 @@ function calculate(e){
    const baseSelfCpp=pensionable*0.099;
    const enhancedSelfCpp=pensionable*0.02;
    cppPayable=baseSelfCpp+enhancedSelfCpp;
-   cppBaseCredit=baseSelfCpp/2+Math.min(Math.max(0,employment-3500)*0.0495,4200);
-   enhancedCppDeduction=baseSelfCpp/2+enhancedSelfCpp+Math.min(Math.max(0,employment-3500)*0.01,700);
-   eiCredit=Math.min(employment,68500)*0.0164;
+   cppBaseCredit=baseSelfCpp/2+Math.min(Math.max(0,employment-3500)*0.0495,4230.45);
+   enhancedCppDeduction=baseSelfCpp/2+enhancedSelfCpp+Math.min(Math.max(0,employment-3500)*0.01,711);
+   eiCredit=Math.min(employment,68900)*0.0163;
  }
  const taxable=Math.max(0,income-deductions-enhancedCppDeduction);
  const creditRate=y===2024?.15:y===2025?.145:.14;
@@ -76,34 +79,46 @@ function calculate(e){
  const fedBpa=Math.min(taxable,bpa[y]);
  const employmentAmount=Math.min(employment,emp[y]);
  const tuitionCreditAmount=Math.min(tuition,Math.max(0,taxable-fedBpa-employmentAmount));
- const fedCredits=(fedBpa+employmentAmount+cppBaseCredit+eiCredit+tuitionCreditAmount)*creditRate;
+ const medicalThreshold=Math.min(Math.max(0,taxable*0.03), y===2026?2890:y===2025?2814:2635);
+ const eligibleMedical=Math.max(0,medical-medicalThreshold);
+ const fedCredits=(fedBpa+employmentAmount+cppBaseCredit+eiCredit+tuitionCreditAmount+eligibleMedical)*creditRate;
  const fed=Math.max(0,fedGross-fedCredits);
  const provBr=brackets[y].prov[p], provRate=provBr[0][1], pb=(pBpa[p]&&pBpa[p][y])||bpa[y];
  const provBase=tax(taxable,provBr);
  let prov=Math.max(0,provBase-Math.min(taxable,pb)*provRate-cppBaseCredit*provRate-eiCredit*provRate);
  let extraProvNote='';
- if(p==='Ontario' && y===2025){
-   const ontarioBpa=12747, ontarioRate=0.0505;
+ if(p==='Ontario' && (y===2024 || y===2025 || y===2026)){
+   const ontarioBpa=y===2026?12989:y===2025?12747:12399, ontarioRate=0.0505;
    const ontarioTaxBeforeCredits=provBase;
    const ontarioBasicCredit=Math.min(taxable,ontarioBpa)*ontarioRate;
    const ontarioCppCredit=cppBaseCredit*ontarioRate;
    const ontarioEiCredit=eiCredit*ontarioRate;
-   const ontarioTax=Math.max(0,ontarioTaxBeforeCredits-ontarioBasicCredit-ontarioCppCredit-ontarioEiCredit);
-   // 2025 Ontario tax reduction for a taxpayer with no dependants: twice the $294 basic amount less Ontario tax before reduction.
-   const ontarioTaxReduction=Math.min(ontarioTax,Math.max(0,588-ontarioTax));
+   const ontarioMedicalCredit=eligibleMedical*ontarioRate;
+   const ontarioTax=Math.max(0,ontarioTaxBeforeCredits-ontarioBasicCredit-ontarioCppCredit-ontarioEiCredit-ontarioMedicalCredit);
+   // Simplified Ontario tax reduction for a taxpayer with no dependants; dependent-related amounts are not modeled.
+   const ontarioReductionBase=y===2026?600:588;
+   const ontarioTaxReduction=Math.min(ontarioTax,Math.max(0,ontarioReductionBase-ontarioTax));
    const ontarioTaxAfterReduction=Math.max(0,ontarioTax-ontarioTaxReduction);
-   const healthPremium=taxable<=20000?0:taxable<=25000?Math.min(300,(taxable-20000)*0.06):taxable<=36000?300:taxable<=38500?Math.min(450,300+(taxable-36000)*0.06):taxable<=48000?450:taxable<=48600?Math.min(600,450+(taxable-48000)*0.25):taxable<=72000?600:taxable<=200000?Math.min(750,600+(taxable-72000)*0.25):taxable<=200600?Math.min(900,750+(taxable-200000)*0.25):900;
-   // LIFT is based on employment income; no LIFT is estimated for self-employment-only income.
+   const healthPremium=taxable<=20000?0:taxable<=36000?Math.min(300,(taxable-20000)*0.06):taxable<=48000?300+Math.min(150,(taxable-36000)*0.06):taxable<=72000?450+Math.min(150,(taxable-48000)*0.25):taxable<=200000?600+Math.min(150,(taxable-72000)*0.25):750+Math.min(150,(taxable-200000)*0.25);
    const liftGross=Math.min(875,employment*0.0505);
-   const liftReduction=Math.max(0,taxable-32500)*0.05;
+   const liftReduction=Math.max(0,taxable-(y===2026?33500:32500))*0.05;
    const lift=Math.min(ontarioTax,Math.max(0,liftGross-liftReduction));
    prov=Math.max(0,ontarioTaxAfterReduction+healthPremium-lift);
-   extraProvNote=`<p><small>Ontario estimate includes estimated tax reduction (${fmt(ontarioTaxReduction)}), Health Premium (${fmt(healthPremium)}) and LIFT credit (${fmt(lift)}). This simplified Ontario calculation may not match every ON428 rule or credit.</small></p>`;
+   extraProvNote=`<p><small>Ontario estimate includes a simplified tax reduction (${fmt(ontarioTaxReduction)}), Health Premium (${fmt(healthPremium)}), medical-expense credit where entered, and LIFT estimate (${fmt(lift)}). Dependant-related credits and all ON428 details are not modeled; compare with tax software.</small></p>`;
  } else {
    extraProvNote='<p><small>Provincial/territorial estimate remains simplified and does not fully model every province-specific credit, premium, surtax or special rule.</small></p>';
  }
- const total=fed+prov+cppPayable,balance=paid+refundable-total;
- document.getElementById('result').innerHTML=`<h2>Estimated result</h2><strong class="big">${balance>=0?fmt(balance)+' refund estimate':fmt(-balance)+' balance owing estimate'}</strong><p>Educational estimate only; not a substitute for tax-preparation software.</p><div class="metrics"><div class="metric"><span>Total income entered</span><b>${fmt(income)}</b></div><div class="metric"><span>Estimated taxable income</span><b>${fmt(taxable)}</b></div><div class="metric"><span>Federal tax after selected credits</span><b>${fmt(fed)}</b></div><div class="metric"><span>Provincial / territorial estimate</span><b>${fmt(prov)}</b></div><div class="metric"><span>Estimated CPP payable on self-employment</span><b>${fmt(cppPayable)}</b></div><div class="metric"><span>Income tax deducted / instalments</span><b>${fmt(paid)}</b></div><div class="metric"><span>Other refundable credits entered</span><b>${fmt(refundable)}</b></div><div class="metric"><span>Estimated total tax + CPP</span><b>${fmt(total)}</b></div></div>${extraProvNote}<p><small>Estimated base CPP credit: ${fmt(cppBaseCredit)}; EI credit: ${fmt(eiCredit)}; enhanced CPP deduction: ${fmt(enhancedCppDeduction)}. CPP estimate assumes no T4 CPP contributions or other Schedule 8 adjustments.</small></p>`;
+ let cwb=0;
+ if(cwbStatus==='single' && y===2026){
+   const workingIncome=employment+selfIncome;
+   const maxCwb=1665;
+   const phaseIn=Math.min(maxCwb,Math.max(0,workingIncome-3000)*0.27);
+   const cwbIncome=Math.max(0,income-deductions-enhancedCppDeduction);
+   const phaseOut=Math.max(0,cwbIncome-26149)*0.15;
+   cwb=Math.max(0,Math.min(maxCwb,phaseIn)-phaseOut);
+ }
+ const total=fed+prov+cppPayable,balance=paid+cwb-total;
+ document.getElementById('result').innerHTML=`<h2>Estimated result</h2><strong class="big">${balance>=0?fmt(balance)+' refund estimate':fmt(-balance)+' balance owing estimate'}</strong><p>Educational estimate only; not a substitute for tax-preparation software.</p><div class="metrics"><div class="metric"><span>Total income entered</span><b>${fmt(income)}</b></div><div class="metric"><span>Estimated taxable income</span><b>${fmt(taxable)}</b></div><div class="metric"><span>Federal tax after selected credits</span><b>${fmt(fed)}</b></div><div class="metric"><span>Provincial / territorial estimate</span><b>${fmt(prov)}</b></div><div class="metric"><span>Estimated CPP payable on self-employment</span><b>${fmt(cppPayable)}</b></div><div class="metric"><span>Income tax deducted / instalments</span><b>${fmt(paid)}</b></div><div class="metric"><span>Estimated Canada Workers Benefit</span><b>${fmt(cwb)}</b></div><div class="metric"><span>Estimated total tax + CPP</span><b>${fmt(total)}</b></div></div>${extraProvNote}<p><small>Estimated base CPP credit: ${fmt(cppBaseCredit)}; EI credit: ${fmt(eiCredit)}; enhanced CPP deduction: ${fmt(enhancedCppDeduction)}; eligible medical expenses after simplified threshold: ${fmt(eligibleMedical)}. CPP estimate assumes no T4 CPP contributions or other Schedule 8 adjustments.</small></p>`;
 }
 document.getElementById('f').addEventListener('submit',calculate);document.getElementById('f').addEventListener('reset',()=>setTimeout(()=>document.getElementById('result').innerHTML='<h2>Your estimate</h2><p>Enter your figures and calculate.</p>',0));
 </script><footer><div><b>JJ PRECISION ACCOUNTING &amp; TAX INC.</b><p>Precision in Accounting. Confidence in Tax.</p></div><div><a href="resources.html">Tax Resources</a> · <a href="privacy.html">Privacy</a> · <a href="disclaimer.html">Disclaimer</a></div><div><a href="mailto:info@jjptax.ca">info@jjptax.ca</a><p>647-806-0141</p></div></footer></body></html>
