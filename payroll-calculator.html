@@ -61,25 +61,46 @@ function progressive(income, brackets){
   return tax;
 }
 function ontarioSurtax(basicTax){
-  // 2026 estimate: 20% over the first surtax threshold and a further
-  // 36% over the second threshold, applied to basic Ontario tax.
-  const first=5710, second=7307;
-  return Math.max(0,basicTax-first)*.20 + Math.max(0,basicTax-second)*.36;
+  // T4127 Ontario surtax is calculated on provincial basic tax after credits.
+  return Math.max(0,basicTax-5818)*.20 + Math.max(0,basicTax-7446)*.36;
 }
 function ontarioHealth(income){
-  // Ontario Health Premium estimate using the standard income bands.
+  // T4127 Ontario Health Premium bands for 2026.
   if(income<=20000) return 0;
-  if(income<=25000) return Math.min(300,(income-20000)*.06);
-  if(income<=36000) return 300;
-  if(income<=38500) return Math.min(450,300+(income-36000)*.06);
-  if(income<=48000) return 450;
-  if(income<=48600) return Math.min(600,450+(income-48000)*.25);
-  return Math.min(900,600+(income-48600)*.25);
+  if(income<=36000) return Math.min(300,.06*(income-20000));
+  if(income<=48000) return Math.min(450,300+.06*(income-36000));
+  if(income<=72000) return Math.min(600,450+.25*(income-48000));
+  if(income<=200000) return Math.min(750,600+.25*(income-72000));
+  return Math.min(900,750+.25*(income-200000));
 }
-function annualTax(income,fedClaim,provClaim,baseCPP,ei,code){const p=PROV[code]||PROV.ON;const fedTax=Math.max(0,progressive(income,FED)-Math.min(fedClaim,16452)*.14-1501*.14-baseCPP*.15-ei*.15);let basic=progressive(income,p.br);let prov=Math.max(0,basic-Math.min(provClaim,p.bpa)*p.br[0].rate-baseCPP*p.br[0].rate-ei*p.br[0].rate);if(code==='ON'){prov+=ontarioSurtax(basic)+ontarioHealth(income);}if(code==='BC'){prov-=Math.min(prov,p.reduction||0);}return [fedTax,Math.max(0,prov)];}
+function annualTax(income,fedClaim,provClaim,baseCPP,ei,code,annualGross){
+  const p=PROV[code]||PROV.ON;
+  // T4127: federal credits for the base CPP portion and EI are calculated
+  // using the actual annualized contributions, not the annual maximums.
+  const fedK1=.14*Math.min(fedClaim,16452);
+  const fedK2=.14*(Math.min(baseCPP,3519.45)+Math.min(ei,1123.07));
+  const fedK4=.14*Math.min(annualGross,1501);
+  const fedTax=Math.max(0,progressive(income,FED)-fedK1-fedK2-fedK4);
+  const provincialRate=p.br[0].rate;
+  const provK1=provClaim*provincialRate;
+  const provK2=provincialRate*(Math.min(baseCPP,3519.45)+Math.min(ei,1123.07));
+  const basic=Math.max(0,progressive(income,p.br)-provK1-provK2);
+  let prov=basic;
+  if(code==='ON'){
+    const surtax=ontarioSurtax(basic);
+    const health=ontarioHealth(income);
+    // With no dependant amount Y entered on TD1ON, the Ontario tax reduction
+    // is the lesser of T4+V1 and $600-(T4+V1), floored at zero.
+    const reduction=Math.max(0,Math.min(basic+surtax,600-(basic+surtax)));
+    prov=Math.max(0,basic+surtax+health-reduction);
+  } else if(code==='BC') {
+    prov=Math.max(0,basic-Math.min(basic,p.reduction||0));
+  }
+  return [fedTax,Math.max(0,prov)];
+}
 function cppOnPeriod(gross,periods,ytd){const exemption=3500/periods;const contrib=Math.max(0,(gross-exemption)*.0595);return Math.min(contrib,Math.max(0,4230.45-ytd));}
 function cpp2OnPeriod(gross,periods,ytd){const low=74600/periods,high=85000/periods;const pensionable=Math.max(0,Math.min(gross,high)-low);return Math.min(pensionable*.04,Math.max(0,416-ytd));}
 function eiOnPeriod(gross,periods,ytd,code){const rate=code==='QC'?.013: .0163;const max=code==='QC'?895.70:1123.07;return Math.min(gross*rate,Math.max(0,max-ytd));}
-function calculate(){const err=$('error');err.style.display='none';const gross=val('gross'),periods=Number($('frequency').value),other=val('otherDeduct');if(!gross||gross<=0){err.textContent='Enter a gross pay amount greater than $0.';err.style.display='block';return;}const date=$('paydate').value;if(!date||!date.startsWith('2026')){err.textContent='This version currently supports 2026 pay dates only.';err.style.display='block';return;}const code=$('province').value;const ytdCPP=val('ytdCPP'),ytdCPP2=val('ytdCPP2'),ytdEI=val('ytdEI');const qc=code==='QC';const cpp=$('exemptCPP').checked?0:(qc?Math.min(Math.max(0,(gross-3500/periods)*.063),Math.max(0,4425-ytdCPP)):cppOnPeriod(gross,periods,ytdCPP)),cpp2=$('exemptCPP').checked?0:cpp2OnPeriod(gross,periods,ytdCPP2),ei=$('exemptEI').checked?0:eiOnPeriod(gross,periods,ytdEI,code);const annualGross=gross*periods;const annualCPP=Math.min(annualGross>3500?(annualGross-3500)*(code==='QC'?.063:.0595):0,code==='QC'?4425:4230.45);const annualCPP2=Math.max(0,Math.min(annualGross,85000)-74600)*.04;const annualEI=Math.min(annualGross*(code==='QC'?.013:.0163),code==='QC'?895.70:1123.07);const annualBaseCPP=Math.min(Math.max(0,(annualGross-3500)*(code==='QC'?.053:.0495)),code==='QC'?3715:3519.45);const [fedAnnual,provAnnual]=annualTax(Math.max(0,annualGross-other*periods),val('federalTD1'),val('ontarioTD1'),annualBaseCPP,annualEI,code);const fed=round(fedAnnual/periods),on=round(provAnnual/periods);$('provLabel').textContent=PROV[code].name+' income tax'+(code==='ON'?' (incl. surtax / health premium estimate)':'');const empCPP=cpp,empCPP2=cpp2,empEI=round(ei*Number($('employerEI').value));const qpip=qc?round(Math.min(gross*.00494,441.82/periods)):0;const employerQpip=qc?round(Math.min(gross*.00692,618.55/periods)):0;const total=round(fed+on+cpp+cpp2+ei+qpip+other),net=round(gross-total),empTotal=round(empCPP+empCPP2+empEI+employerQpip),cost=round(gross+empTotal);const set=(id,n)=>$(id).textContent=money(n);set('netPay',net);set('rGross',gross);set('rFed',fed);set('rProv',on);set('rCPP',cpp);set('rCPP2',cpp2);set('rEI',ei);set('rOther',other);$('rCPP').parentElement.querySelector('span').textContent=qc?'QPP (base + first additional)':'CPP (base + first additional)';$('rCPP2').parentElement.querySelector('span').textContent=qc?'QPP2':'CPP2';$('rEI').parentElement.querySelector('span').textContent=qc?'EI':'EI';set('rTotal',total);$('rEmpCPP').parentElement.querySelector('span').textContent=qc?'Employer QPP':'Employer CPP';$('rEmpCPP2').parentElement.querySelector('span').textContent=qc?'Employer QPP2':'Employer CPP2';set('rEmpCPP',empCPP);set('rEmpCPP2',empCPP2);set('rEmpEI',empEI);if(qc){$('rEmpEI').parentElement.querySelector('span').textContent='Employer EI';let qrow=$('employerQpipRow');if(!qrow){qrow=document.createElement('div');qrow.id='employerQpipRow';qrow.className='rowline';qrow.innerHTML='<span>Employer QPIP</span><strong></strong>';$('rEmpEI').parentElement.after(qrow);}qrow.querySelector('strong').textContent=money(employerQpip);qrow.style.display='flex';}else{const qrow=$('employerQpipRow');if(qrow)qrow.style.display='none';$('rEmpEI').parentElement.querySelector('span').textContent='Employer EI';}set('rEmpTotal',empTotal);set('rCost',cost);$('periodLabel').textContent='Estimated net pay for this pay period';$('annualNote').textContent=(qc?'Quebec uses QPP and QPIP, which are calculated separately. ':'')+'Annualized gross pay: '+money(annualGross)+'. Estimated annual income tax: '+money(fedAnnual+provAnnual)+'. Year-to-date entries are treated as contributions already deducted by this employer and are used to cap CPP, CPP2 and EI. Estimates assume regular equal pay periods throughout the year; irregular earnings and mid-year employment changes can produce different results.';}
+function calculate(){const err=$('error');err.style.display='none';const gross=val('gross'),periods=Number($('frequency').value),other=val('otherDeduct');if(!gross||gross<=0){err.textContent='Enter a gross pay amount greater than $0.';err.style.display='block';return;}const date=$('paydate').value;if(!date||!date.startsWith('2026')){err.textContent='This version currently supports 2026 pay dates only.';err.style.display='block';return;}const code=$('province').value;const ytdCPP=val('ytdCPP'),ytdCPP2=val('ytdCPP2'),ytdEI=val('ytdEI');const qc=code==='QC';const cpp=$('exemptCPP').checked?0:(qc?Math.min(Math.max(0,(gross-3500/periods)*.063),Math.max(0,4425-ytdCPP)):cppOnPeriod(gross,periods,ytdCPP)),cpp2=$('exemptCPP').checked?0:cpp2OnPeriod(gross,periods,ytdCPP2),ei=$('exemptEI').checked?0:eiOnPeriod(gross,periods,ytdEI,code);const annualGross=gross*periods;const annualCPP=Math.min(annualGross>3500?(annualGross-3500)*(code==='QC'?.063:.0595):0,code==='QC'?4425:4230.45);const annualCPP2=Math.max(0,Math.min(annualGross,85000)-74600)*.04;const annualEI=Math.min(annualGross*(code==='QC'?.013:.0163),code==='QC'?895.70:1123.07);const annualBaseCPP=Math.min(annualCPP*(code==='QC'?.053/.063:.0495/.0595),code==='QC'?3768.30:3519.45);const annualAdditionalCPP=annualCPP*(code==='QC'?.0100/.0630:.0100/.0595)+annualCPP2;const annualTaxable=Math.max(0,annualGross-other*periods-annualAdditionalCPP);const [fedAnnual,provAnnual]=annualTax(annualTaxable,val('federalTD1'),val('ontarioTD1'),annualBaseCPP,annualEI,code,annualGross);const fed=round(fedAnnual/periods),on=round(provAnnual/periods);$('provLabel').textContent=PROV[code].name+' income tax'+(code==='ON'?' (incl. surtax / health premium estimate)':'');const empCPP=cpp,empCPP2=cpp2,empEI=round(ei*Number($('employerEI').value));const qpip=qc?round(Math.min(gross*.00494,441.82/periods)):0;const employerQpip=qc?round(Math.min(gross*.00692,618.55/periods)):0;const total=round(fed+on+cpp+cpp2+ei+qpip+other),net=round(gross-total),empTotal=round(empCPP+empCPP2+empEI+employerQpip),cost=round(gross+empTotal);const set=(id,n)=>$(id).textContent=money(n);set('netPay',net);set('rGross',gross);set('rFed',fed);set('rProv',on);set('rCPP',cpp);set('rCPP2',cpp2);set('rEI',ei);set('rOther',other);$('rCPP').parentElement.querySelector('span').textContent=qc?'QPP (base + first additional)':'CPP (base + first additional)';$('rCPP2').parentElement.querySelector('span').textContent=qc?'QPP2':'CPP2';$('rEI').parentElement.querySelector('span').textContent=qc?'EI':'EI';set('rTotal',total);$('rEmpCPP').parentElement.querySelector('span').textContent=qc?'Employer QPP':'Employer CPP';$('rEmpCPP2').parentElement.querySelector('span').textContent=qc?'Employer QPP2':'Employer CPP2';set('rEmpCPP',empCPP);set('rEmpCPP2',empCPP2);set('rEmpEI',empEI);if(qc){$('rEmpEI').parentElement.querySelector('span').textContent='Employer EI';let qrow=$('employerQpipRow');if(!qrow){qrow=document.createElement('div');qrow.id='employerQpipRow';qrow.className='rowline';qrow.innerHTML='<span>Employer QPIP</span><strong></strong>';$('rEmpEI').parentElement.after(qrow);}qrow.querySelector('strong').textContent=money(employerQpip);qrow.style.display='flex';}else{const qrow=$('employerQpipRow');if(qrow)qrow.style.display='none';$('rEmpEI').parentElement.querySelector('span').textContent='Employer EI';}set('rEmpTotal',empTotal);set('rCost',cost);$('periodLabel').textContent='Estimated net pay for this pay period';$('annualNote').textContent=(qc?'Quebec uses QPP and QPIP, which are calculated separately. ':'')+'Annualized gross pay: '+money(annualGross)+'. Estimated annual income tax: '+money(fedAnnual+provAnnual)+'. Year-to-date entries are treated as contributions already deducted by this employer and are used to cap CPP, CPP2 and EI. Estimates assume regular equal pay periods throughout the year; irregular earnings and mid-year employment changes can produce different results.';}
 $('province').addEventListener('change',()=>{const c=$('province').value;$('ontarioTD1').value=PROV[c]?.bpa||12989;$('ontarioTD1').previousElementSibling.textContent=PROV[c]?.name+' TD1 claim amount ($)';calculate();});$('calculate').addEventListener('click',calculate);$('year').textContent=new Date().getFullYear();calculate();
 </script></body></html>
