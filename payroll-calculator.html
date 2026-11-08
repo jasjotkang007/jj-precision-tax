@@ -37,7 +37,7 @@ const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('en-CA',
 const FED=[{up:58523,rate:.14},{up:117045,rate:.205},{up:181440,rate:.26},{up:258482,rate:.29},{up:Infinity,rate:.33}];
 const PROV={
 AB:{name:'Alberta',bpa:22769,br:[{up:61200,rate:.08},{up:154259,rate:.10},{up:185111,rate:.12},{up:246813,rate:.13},{up:370220,rate:.14},{up:Infinity,rate:.15}]},
-BC:{name:'British Columbia',bpa:13216,br:[{up:50363,rate:.0614},{up:100728,rate:.077},{up:115648,rate:.105},{up:140430,rate:.1229},{up:190405,rate:.147},{up:265545,rate:.168},{up:Infinity,rate:.205}],reduction:805},
+BC:{name:'British Columbia',bpa:13216,br:[{up:50363,rate:.0506},{up:100728,rate:.077},{up:115648,rate:.105},{up:140430,rate:.1229},{up:190405,rate:.147},{up:265545,rate:.168},{up:Infinity,rate:.205}],reduction:805},
 MB:{name:'Manitoba',bpa:15780,br:[{up:47000,rate:.108},{up:100000,rate:.1275},{up:Infinity,rate:.174}],surtax:0},
 NB:{name:'New Brunswick',bpa:13664,br:[{up:51306,rate:.094},{up:102614,rate:.14},{up:190060,rate:.16},{up:Infinity,rate:.195}]},
 NL:{name:'Newfoundland and Labrador',bpa:15000,br:[{up:44192,rate:.087},{up:88382,rate:.145},{up:157792,rate:.158},{up:220910,rate:.178},{up:282214,rate:.198},{up:564429,rate:.208},{up:1128858,rate:.213},{up:Infinity,rate:.218}]},
@@ -94,7 +94,12 @@ function annualTax(income,fedClaim,provClaim,baseCPP,ei,code,annualGross){
     const reduction=Math.max(0,Math.min(basic+surtax,600-(basic+surtax)));
     prov=Math.max(0,basic+surtax+health-reduction);
   } else if(code==='BC') {
-    prov=Math.max(0,basic-Math.min(basic,p.reduction||0));
+    // BC basic tax reduction is income-tested; it is nil above the 2026
+    // annual taxable-income ceiling of $44,952. Do not apply $805 universally.
+    let bcReduction=0;
+    if(income<=25570) bcReduction=Math.min(basic,805);
+    else if(income<=44952) bcReduction=Math.min(basic,Math.max(0,805-(income-25570)*0.0356));
+    prov=Math.max(0,basic-bcReduction);
   }
   return [fedTax,Math.max(0,prov)];
 }
